@@ -1,3 +1,8 @@
+/**
+ * Calculates total odds for the given array of odds.
+ * @param listOfOdds odds array
+ * @returns
+ */
 export const calculateTotalOddsForNormalBettingSlip = (
   listOfOdds: number[]
 ): number => {
