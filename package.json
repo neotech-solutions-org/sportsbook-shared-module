@@ -1,0 +1,20 @@
+{
+  "name": "sportsbook-shared-module",
+  "version": "1.0.0",
+  "description": "Repository of the shared modules for the sportsbook project.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}
