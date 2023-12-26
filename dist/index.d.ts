@@ -20,11 +20,11 @@ type BetSlipMaxPayoutResult = {
 };
 
 /**
- * Calculates total odds for the given array of odds.
- * @param listOfOdds odds array
- * @returns
+ * Calculates total odds from the given bet types.
+ * @param bets - Bet types
+ * @returns total odds
  */
-declare const calculateTotalOddsForNormalBettingSlip: (listOfOdds: number[]) => number;
+declare const calculateTotalOddsForNormalBettingSlip: (bets: BetType[]) => number;
 /**
  * Calculate max stake amount.
  * @param totalOdds - Total odds.
