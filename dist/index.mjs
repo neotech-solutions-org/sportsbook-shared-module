@@ -3,7 +3,8 @@ var BETTING_TYPES = ["Single", "Double", "Treble"];
 var MAX_PAYOUT = 1e4;
 
 // src/index.ts
-var calculateTotalOddsForNormalBettingSlip = (listOfOdds) => {
+var calculateTotalOddsForNormalBettingSlip = (bets) => {
+  const listOfOdds = bets.map((bet) => bet.odds);
   return listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1);
 };
 var calculateMaxStakeAmountForNormalBettingSlip = (totalOdds, limit = MAX_PAYOUT) => {
@@ -46,7 +47,7 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
     totalStakeAmount += bet.singlesStakeAmount;
   }
   if (stakeAmount) {
-    const payout = calculateTotalOddsForNormalBettingSlip(bets.map((bet) => bet.odds)) * stakeAmount;
+    const payout = calculateTotalOddsForNormalBettingSlip(bets) * stakeAmount;
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += stakeAmount;
   }
@@ -78,7 +79,7 @@ var calculateSystemMaxPayout = (combinations, stakeAmountPerCombination, bankerO
       ...bankerOutcomes.map((outcome) => outcome.odds),
       ...combination.map((comb) => comb.odds)
     ];
-    const payoutPerCombination = calculateTotalOddsForNormalBettingSlip(listOfOdds) * stakeAmountPerCombination;
+    const payoutPerCombination = listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1) * stakeAmountPerCombination;
     maxPayout += payoutPerCombination;
   }
   return maxPayout;
