@@ -1,5 +1,6 @@
 export const BETTING_TYPES = ['Single', 'Double', 'Treble'];
 export const MAX_PAYOUT = 10000.0;
+export const MAX_STAKE_AMOUNT = 1499.0;
 
 export type BetType = {
   outcomeId: string;
@@ -23,4 +24,5 @@ export type BetSlipRequest = {
 export type BetSlipMaxPayoutResult = {
   maxPayout: number;
   totalStakeAmount: number;
+  maxTotalStakeAmount: number;
 };
