@@ -1,5 +1,4 @@
 // Types
-import { bettingSlipRequest } from './test-data';
 import {
   BETTING_TYPES,
   BetSlipMaxPayoutResult,
@@ -9,13 +8,14 @@ import {
 } from './types';
 
 /**
- * Calculates total odds for the given array of odds.
- * @param listOfOdds odds array
- * @returns
+ * Calculates total odds from the given bet types.
+ * @param bets - Bet types
+ * @returns total odds
  */
 export const calculateTotalOddsForNormalBettingSlip = (
-  listOfOdds: number[],
+  bets: BetType[],
 ): number => {
+  const listOfOdds = bets.map((bet) => bet.odds);
   return listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1);
 };
 
@@ -89,9 +89,7 @@ export const calculateMaxPayout = (
   }
 
   if (stakeAmount) {
-    const payout =
-      calculateTotalOddsForNormalBettingSlip(bets.map((bet) => bet.odds)) *
-      stakeAmount;
+    const payout = calculateTotalOddsForNormalBettingSlip(bets) * stakeAmount;
 
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += stakeAmount;
@@ -150,7 +148,7 @@ const calculateSystemMaxPayout = (
       ...combination.map((comb) => comb.odds),
     ];
     const payoutPerCombination =
-      calculateTotalOddsForNormalBettingSlip(listOfOdds) *
+      listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1) *
       stakeAmountPerCombination;
     maxPayout += payoutPerCombination;
   }
