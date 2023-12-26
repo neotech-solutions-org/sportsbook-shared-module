@@ -1,6 +1,7 @@
 // src/types.ts
 var BETTING_TYPES = ["Single", "Double", "Treble"];
 var MAX_PAYOUT = 1e4;
+var MAX_STAKE_AMOUNT = 1499;
 
 // src/index.ts
 var calculateTotalOddsForNormalBettingSlip = (bets) => {
@@ -36,6 +37,7 @@ var getCombinations = (bets) => {
 var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
   let maxPayout = 0;
   let totalStakeAmount = 0;
+  let maxTotalStakeAmount = 0;
   const { bets, systemBetTypes, stakeAmount } = betSlipRequest;
   const bankerOutcomes = bets.filter((bet) => bet.banker);
   const combinationOutcomes = bets.filter((bet) => !bet.banker);
@@ -45,11 +47,13 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
     const payout = bet.odds * bet.singlesStakeAmount;
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += bet.singlesStakeAmount;
+    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
   }
   if (stakeAmount) {
     const payout = calculateTotalOddsForNormalBettingSlip(bets) * stakeAmount;
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += stakeAmount;
+    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
   }
   if (systemBetTypes.length > 0) {
     for (const systemBetType of systemBetTypes) {
@@ -65,9 +69,10 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
       );
       maxPayout += payout < limit ? payout : limit;
       totalStakeAmount += stakeAmountPerCombination * combinations.length;
+      maxTotalStakeAmount += MAX_STAKE_AMOUNT;
     }
   }
-  return { maxPayout, totalStakeAmount };
+  return { maxPayout, totalStakeAmount, maxTotalStakeAmount };
 };
 var getBettingType = (numberOfBets) => {
   return BETTING_TYPES[numberOfBets - 1] ?? `${numberOfBets} Fold`;

@@ -1,8 +1,8 @@
 import { BetSlipRequest, BetType } from './types';
 
 export const bets: BetType[] = [
-  { eventId: '1', outcomeId: '1', odds: 1.5, singlesStakeAmount: 10000 },
-  { eventId: '2', outcomeId: '2', odds: 1.25 },
+  { eventId: '1', outcomeId: '1', odds: 1.5, singlesStakeAmount: 10 },
+  { eventId: '2', outcomeId: '2', odds: 1.25, singlesStakeAmount: 10 },
   { eventId: '3', outcomeId: '3', odds: 1.5 },
   { eventId: '4', outcomeId: '4', odds: 2 },
   { eventId: '5', outcomeId: '5', odds: 2.5 },

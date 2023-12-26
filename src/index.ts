@@ -1,10 +1,12 @@
 // Types
+import { bettingSlipRequest } from './test-data';
 import {
   BETTING_TYPES,
   BetSlipMaxPayoutResult,
   BetSlipRequest,
   BetType,
   MAX_PAYOUT,
+  MAX_STAKE_AMOUNT,
 } from './types';
 
 /**
@@ -66,7 +68,7 @@ export const getCombinations = (bets: BetType[]): Record<string, number> => {
 };
 
 /**
- * Calculate total max payout and total stake amount.
+ * Calculate total max payout, total stake amount and max total stake amount.
  * If the calculated max payout is higher then max possible payout, then max payout is set to max possible payout.
  * @returns max payout and total stake amount
  */
@@ -76,6 +78,7 @@ export const calculateMaxPayout = (
 ): BetSlipMaxPayoutResult => {
   let maxPayout = 0;
   let totalStakeAmount = 0;
+  let maxTotalStakeAmount = 0;
   const { bets, systemBetTypes, stakeAmount } = betSlipRequest;
   const bankerOutcomes = bets.filter((bet) => bet.banker);
   const combinationOutcomes = bets.filter((bet) => !bet.banker);
@@ -86,6 +89,7 @@ export const calculateMaxPayout = (
 
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += bet.singlesStakeAmount;
+    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
   }
 
   if (stakeAmount) {
@@ -93,6 +97,7 @@ export const calculateMaxPayout = (
 
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += stakeAmount;
+    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
   }
 
   if (systemBetTypes.length > 0) {
@@ -112,10 +117,11 @@ export const calculateMaxPayout = (
 
       maxPayout += payout < limit ? payout : limit;
       totalStakeAmount += stakeAmountPerCombination * combinations.length;
+      maxTotalStakeAmount += MAX_STAKE_AMOUNT;
     }
   }
 
-  return { maxPayout, totalStakeAmount };
+  return { maxPayout, totalStakeAmount, maxTotalStakeAmount };
 };
 
 /**

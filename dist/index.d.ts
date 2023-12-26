@@ -17,6 +17,7 @@ type BetSlipRequest = {
 type BetSlipMaxPayoutResult = {
     maxPayout: number;
     totalStakeAmount: number;
+    maxTotalStakeAmount: number;
 };
 
 /**
@@ -39,7 +40,7 @@ declare const calculateMaxStakeAmountForNormalBettingSlip: (totalOdds: number, l
  */
 declare const getCombinations: (bets: BetType[]) => Record<string, number>;
 /**
- * Calculate total max payout and total stake amount.
+ * Calculate total max payout, total stake amount and max total stake amount.
  * If the calculated max payout is higher then max possible payout, then max payout is set to max possible payout.
  * @returns max payout and total stake amount
  */
