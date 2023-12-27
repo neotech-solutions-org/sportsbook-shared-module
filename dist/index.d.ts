@@ -1,18 +1,17 @@
-type BetType = {
+type Bet = {
     outcomeId: string;
     eventId: string;
     odds: number;
     singlesStakeAmount?: number;
     banker?: boolean;
 };
-type SystemBetType = {
+type BetType = {
     requiredHitCount: number;
     stakeAmountPerCombination: number;
 };
 type BetSlipRequest = {
-    bets: BetType[];
-    stakeAmount?: number;
-    systemBetTypes?: SystemBetType[];
+    bets: Bet[];
+    betTypes?: BetType[];
 };
 type BetSlipMaxPayoutResult = {
     maxPayout: number;
@@ -21,11 +20,11 @@ type BetSlipMaxPayoutResult = {
 };
 
 /**
- * Calculates total odds from the given bet types.
- * @param bets - Bet types
+ * Calculates total odds from the given bets.
+ * @param bets - Bets
  * @returns total odds
  */
-declare const calculateTotalOddsForNormalBettingSlip: (bets: BetType[]) => number;
+declare const calculateTotalOddsForNormalBettingSlip: (bets: Bet[]) => number;
 /**
  * Calculate max stake amount.
  * @param totalOdds - Total odds.
@@ -38,7 +37,7 @@ declare const calculateMaxStakeAmountForNormalBettingSlip: (totalOdds: number, l
  * @param bets - Bets
  * @returns record with combination type and number of combinations
  */
-declare const getCombinations: (bets: BetType[]) => Record<string, number>;
+declare const getCombinations: (bets: Bet[]) => Record<string, number>;
 /**
  * Calculate total max payout, total stake amount and max total stake amount.
  * If the calculated max payout is higher then max possible payout, then max payout is set to max possible payout.

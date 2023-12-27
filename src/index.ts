@@ -1,22 +1,19 @@
 // Types
-import { bettingSlipRequest } from './test-data';
 import {
   BETTING_TYPES,
+  Bet,
   BetSlipMaxPayoutResult,
   BetSlipRequest,
-  BetType,
   MAX_PAYOUT,
   MAX_STAKE_AMOUNT,
 } from './types';
 
 /**
- * Calculates total odds from the given bet types.
- * @param bets - Bet types
+ * Calculates total odds from the given bets.
+ * @param bets - Bets
  * @returns total odds
  */
-export const calculateTotalOddsForNormalBettingSlip = (
-  bets: BetType[],
-): number => {
+export const calculateTotalOddsForNormalBettingSlip = (bets: Bet[]): number => {
   const listOfOdds = bets.map((bet) => bet.odds);
   return listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1);
 };
@@ -49,7 +46,7 @@ export const calculateMaxStakeAmountForNormalBettingSlip = (
  * @param bets - Bets
  * @returns record with combination type and number of combinations
  */
-export const getCombinations = (bets: BetType[]): Record<string, number> => {
+export const getCombinations = (bets: Bet[]): Record<string, number> => {
   const betsWithoutBankers = bets.filter((bet) => !bet.banker);
   const combinations: Record<string, number> = {};
   const numberOfBankers = bets.length - betsWithoutBankers.length;
@@ -79,7 +76,7 @@ export const calculateMaxPayout = (
   let maxPayout = 0;
   let totalStakeAmount = 0;
   let maxTotalStakeAmount = 0;
-  const { bets, systemBetTypes, stakeAmount } = betSlipRequest;
+  const { bets, betTypes } = betSlipRequest;
   const bankerOutcomes = bets.filter((bet) => bet.banker);
   const combinationOutcomes = bets.filter((bet) => !bet.banker);
 
@@ -92,17 +89,9 @@ export const calculateMaxPayout = (
     maxTotalStakeAmount += MAX_STAKE_AMOUNT;
   }
 
-  if (stakeAmount) {
-    const payout = calculateTotalOddsForNormalBettingSlip(bets) * stakeAmount;
-
-    maxPayout += payout < limit ? payout : limit;
-    totalStakeAmount += stakeAmount;
-    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
-  }
-
-  if (systemBetTypes.length > 0) {
-    for (const systemBetType of systemBetTypes) {
-      const { requiredHitCount, stakeAmountPerCombination } = systemBetType;
+  if (betTypes.length > 0) {
+    for (const betType of betTypes) {
+      const { requiredHitCount, stakeAmountPerCombination } = betType;
 
       const combinations = generateCombinations(
         combinationOutcomes,
@@ -142,9 +131,9 @@ export const getBettingType = (numberOfBets: number) => {
  * @returns max payout
  */
 const calculateSystemMaxPayout = (
-  combinations: BetType[][],
+  combinations: Bet[][],
   stakeAmountPerCombination: number,
-  bankerOutcomes: BetType[],
+  bankerOutcomes: Bet[],
 ): number => {
   let maxPayout = 0;
 
@@ -169,14 +158,11 @@ const calculateSystemMaxPayout = (
  * @param size - Size of the combinations
  * @returns combinations
  */
-const generateCombinations = (
-  outcomes: BetType[],
-  size: number,
-): BetType[][] => {
-  const result: BetType[][] = [];
+const generateCombinations = (outcomes: Bet[], size: number): Bet[][] => {
+  const result: Bet[][] = [];
 
   function generate(
-    currentCombo: BetType[],
+    currentCombo: Bet[],
     start: number,
     usedEventIds: Set<string>,
   ): void {
