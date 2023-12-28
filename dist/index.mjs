@@ -39,8 +39,6 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
   let totalStakeAmount = 0;
   let maxTotalStakeAmount = 0;
   const { bets, betTypes } = betSlipRequest;
-  const bankerOutcomes = bets.filter((bet) => bet.banker);
-  const combinationOutcomes = bets.filter((bet) => !bet.banker);
   for (const bet of bets) {
     if (!bet.singlesStakeAmount)
       continue;
@@ -49,7 +47,9 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
     totalStakeAmount += bet.singlesStakeAmount;
     maxTotalStakeAmount += MAX_STAKE_AMOUNT;
   }
-  if (betTypes.length > 0) {
+  if (betTypes?.length > 0) {
+    const bankerOutcomes = bets.filter((bet) => bet.banker);
+    const combinationOutcomes = bets.filter((bet) => !bet.banker);
     for (const betType of betTypes) {
       const { requiredHitCount, stakeAmountPerCombination } = betType;
       const combinations = generateCombinations(
