@@ -5,7 +5,7 @@ export const MAX_STAKE_AMOUNT = 1499.0;
 export type Bet = {
   outcomeId: string;
   eventId: string;
-  odds: number;
+  odds: string;
   singlesStakeAmount?: number;
   banker?: boolean;
 };

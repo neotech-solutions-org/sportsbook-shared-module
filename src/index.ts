@@ -14,7 +14,7 @@ import {
  * @returns total odds
  */
 export const calculateTotalOddsForNormalBettingSlip = (bets: Bet[]): number => {
-  const listOfOdds = bets.map((bet) => bet.odds);
+  const listOfOdds = bets.map((bet) => Number(bet.odds));
   return listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1);
 };
 
@@ -80,7 +80,7 @@ export const calculateMaxPayout = (
 
   for (const bet of bets) {
     if (!bet.singlesStakeAmount) continue;
-    const payout = bet.odds * bet.singlesStakeAmount;
+    const payout = Number(bet.odds) * bet.singlesStakeAmount;
 
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += bet.singlesStakeAmount;
@@ -139,8 +139,8 @@ const calculateSystemMaxPayout = (
 
   for (const combination of combinations) {
     const listOfOdds: number[] = [
-      ...bankerOutcomes.map((outcome) => outcome.odds),
-      ...combination.map((comb) => comb.odds),
+      ...bankerOutcomes.map((outcome) => Number(outcome.odds)),
+      ...combination.map((comb) => Number(comb.odds)),
     ];
     const payoutPerCombination =
       listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1) *

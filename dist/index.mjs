@@ -5,7 +5,7 @@ var MAX_STAKE_AMOUNT = 1499;
 
 // src/index.ts
 var calculateTotalOddsForNormalBettingSlip = (bets) => {
-  const listOfOdds = bets.map((bet) => bet.odds);
+  const listOfOdds = bets.map((bet) => Number(bet.odds));
   return listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1);
 };
 var calculateMaxStakeAmountForNormalBettingSlip = (totalOdds, limit = MAX_PAYOUT) => {
@@ -42,7 +42,7 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
   for (const bet of bets) {
     if (!bet.singlesStakeAmount)
       continue;
-    const payout = bet.odds * bet.singlesStakeAmount;
+    const payout = Number(bet.odds) * bet.singlesStakeAmount;
     maxPayout += payout < limit ? payout : limit;
     totalStakeAmount += bet.singlesStakeAmount;
     maxTotalStakeAmount += MAX_STAKE_AMOUNT;
@@ -75,8 +75,8 @@ var calculateSystemMaxPayout = (combinations, stakeAmountPerCombination, bankerO
   let maxPayout = 0;
   for (const combination of combinations) {
     const listOfOdds = [
-      ...bankerOutcomes.map((outcome) => outcome.odds),
-      ...combination.map((comb) => comb.odds)
+      ...bankerOutcomes.map((outcome) => Number(outcome.odds)),
+      ...combination.map((comb) => Number(comb.odds))
     ];
     const payoutPerCombination = listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1) * stakeAmountPerCombination;
     maxPayout += payoutPerCombination;

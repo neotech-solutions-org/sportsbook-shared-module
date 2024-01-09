@@ -1,7 +1,7 @@
 type Bet = {
     outcomeId: string;
     eventId: string;
-    odds: number;
+    odds: string;
     singlesStakeAmount?: number;
     banker?: boolean;
 };
