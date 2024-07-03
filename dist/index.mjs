@@ -1,18 +1,16 @@
 // src/types.ts
 var BETTING_TYPES = ["Single", "Double", "Treble"];
-var MAX_PAYOUT = 1e4;
-var MAX_STAKE_AMOUNT = 1499;
 
 // src/index.ts
 var calculateTotalOddsForNormalBettingSlip = (bets) => {
   const listOfOdds = bets.map((bet) => Number(bet.odds));
   return listOfOdds.reduce((accumulator, odds) => accumulator * odds, 1);
 };
-var calculateMaxStakeAmountForNormalBettingSlip = (totalOdds, limit = MAX_PAYOUT) => {
-  let rawStakeAmount = limit / totalOdds;
+var calculateMaxStakeAmountForNormalBettingSlip = (totalOdds, maxWinning) => {
+  let rawStakeAmount = maxWinning / totalOdds;
   let roundedStakeAmount = +rawStakeAmount.toFixed(2);
   let maxPayout = totalOdds * roundedStakeAmount;
-  while (maxPayout > limit) {
+  while (maxPayout > maxWinning) {
     rawStakeAmount -= 0.01;
     roundedStakeAmount = +rawStakeAmount.toFixed(2);
     maxPayout = totalOdds * roundedStakeAmount;
@@ -34,7 +32,7 @@ var getCombinations = (bets) => {
   }
   return combinations;
 };
-var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
+var calculateMaxPayout = (betSlipRequest, maxWinning, maxStakeAmount) => {
   let maxPayout = 0;
   let totalStakeAmount = 0;
   let maxTotalStakeAmount = 0;
@@ -43,9 +41,9 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
     if (!bet.singlesStakeAmount)
       continue;
     const payout = Number(bet.odds) * bet.singlesStakeAmount;
-    maxPayout += payout < limit ? payout : limit;
+    maxPayout += payout < maxWinning ? payout : maxWinning;
     totalStakeAmount += bet.singlesStakeAmount;
-    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
+    maxTotalStakeAmount += maxStakeAmount;
   }
   if (betTypes?.length > 0) {
     const bankerOutcomes = bets.filter((bet) => bet.banker);
@@ -61,9 +59,9 @@ var calculateMaxPayout = (betSlipRequest, limit = MAX_PAYOUT) => {
         stakeAmountPerCombination,
         bankerOutcomes
       );
-      maxPayout += payout < limit ? payout : limit;
+      maxPayout += payout < maxWinning ? payout : maxWinning;
       totalStakeAmount += stakeAmountPerCombination * combinations.length;
-      maxTotalStakeAmount += MAX_STAKE_AMOUNT;
+      maxTotalStakeAmount += maxStakeAmount;
     }
   }
   return { maxPayout, totalStakeAmount, maxTotalStakeAmount };
