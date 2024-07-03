@@ -4,8 +4,6 @@ import {
   Bet,
   BetSlipMaxPayoutResult,
   BetSlipRequest,
-  MAX_PAYOUT,
-  MAX_STAKE_AMOUNT,
 } from './types';
 
 /**
@@ -21,18 +19,18 @@ export const calculateTotalOddsForNormalBettingSlip = (bets: Bet[]): number => {
 /**
  * Calculate max stake amount.
  * @param totalOdds - Total odds.
- * @param limit - Max payout limit.
+ * @param maxWinning - Max winning.
  * @returns max stake amount
  */
 export const calculateMaxStakeAmountForNormalBettingSlip = (
   totalOdds: number,
-  limit = MAX_PAYOUT,
+  maxWinning: number,
 ): number => {
-  let rawStakeAmount = limit / totalOdds;
+  let rawStakeAmount = maxWinning / totalOdds;
   let roundedStakeAmount = +rawStakeAmount.toFixed(2);
 
   let maxPayout = totalOdds * roundedStakeAmount;
-  while (maxPayout > limit) {
+  while (maxPayout > maxWinning) {
     rawStakeAmount -= 0.01;
     roundedStakeAmount = +rawStakeAmount.toFixed(2);
     maxPayout = totalOdds * roundedStakeAmount;
@@ -67,11 +65,15 @@ export const getCombinations = (bets: Bet[]): Record<string, number> => {
 /**
  * Calculate total max payout, total stake amount and max total stake amount.
  * If the calculated max payout is higher then max possible payout, then max payout is set to max possible payout.
+ * @param betSlipRequest - Bet Slip Request
+ * @param maxWinning - Max winning
+ * @param maxStakeAmount - Max Stake Amount
  * @returns max payout and total stake amount
  */
 export const calculateMaxPayout = (
   betSlipRequest: BetSlipRequest,
-  limit = MAX_PAYOUT,
+  maxWinning: number,
+  maxStakeAmount: number,
 ): BetSlipMaxPayoutResult => {
   let maxPayout = 0;
   let totalStakeAmount = 0;
@@ -82,9 +84,9 @@ export const calculateMaxPayout = (
     if (!bet.singlesStakeAmount) continue;
     const payout = Number(bet.odds) * bet.singlesStakeAmount;
 
-    maxPayout += payout < limit ? payout : limit;
+    maxPayout += payout < maxWinning ? payout : maxWinning;
     totalStakeAmount += bet.singlesStakeAmount;
-    maxTotalStakeAmount += MAX_STAKE_AMOUNT;
+    maxTotalStakeAmount += maxStakeAmount;
   }
 
   if (betTypes?.length > 0) {
@@ -104,9 +106,9 @@ export const calculateMaxPayout = (
         bankerOutcomes,
       );
 
-      maxPayout += payout < limit ? payout : limit;
+      maxPayout += payout < maxWinning ? payout : maxWinning;
       totalStakeAmount += stakeAmountPerCombination * combinations.length;
-      maxTotalStakeAmount += MAX_STAKE_AMOUNT;
+      maxTotalStakeAmount += maxStakeAmount;
     }
   }
 
