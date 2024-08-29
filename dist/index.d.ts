@@ -4,6 +4,8 @@ type Bet = {
     odds: string;
     singlesStakeAmount?: number;
     banker?: boolean;
+    marketTypeId: string;
+    marketTypeCombiningIds: string[];
 };
 type BetType = {
     requiredHitCount: number;

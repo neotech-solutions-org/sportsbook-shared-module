@@ -175,16 +175,34 @@ const generateCombinations = (outcomes: Bet[], size: number): Bet[][] => {
 
     for (let i = start; i < outcomes.length; i++) {
       const currentOutcome = outcomes[i];
+      const {eventId} = currentOutcome;
 
-      if (!usedEventIds.has(currentOutcome.eventId)) {
+      if (!usedEventIds.has(eventId)) {
         currentCombo.push(currentOutcome);
 
-        usedEventIds.add(currentOutcome.eventId);
+        usedEventIds.add(eventId);
 
         generate(currentCombo, i + 1, usedEventIds);
 
         currentCombo.pop();
-        usedEventIds.delete(currentOutcome.eventId);
+        usedEventIds.delete(eventId);
+      } else {
+        // Case when the outcome is from an already used event
+        const combiningIds = currentOutcome.marketTypeCombiningIds
+
+        // Check if any of the market types in the current combination can combine with the new outcome
+        const canCombine = currentCombo.some((outcome) => {
+          const existingMarketTypeId = outcome.marketTypeId;
+          return combiningIds.includes(existingMarketTypeId);
+        });
+
+        if (canCombine) {
+          currentCombo.push(currentOutcome);
+
+          generate(currentCombo, i + 1, usedEventIds);
+
+          currentCombo.pop();
+        }
       }
     }
   }
