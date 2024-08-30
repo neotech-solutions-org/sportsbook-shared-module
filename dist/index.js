@@ -119,7 +119,7 @@ var generateCombinations = (outcomes, size) => {
     }
     for (let i = start; i < outcomes.length; i++) {
       const currentOutcome = outcomes[i];
-      const { eventId } = currentOutcome;
+      const { eventId, marketTypeCombiningIds } = currentOutcome;
       if (!usedEventIds.has(eventId)) {
         currentCombo.push(currentOutcome);
         usedEventIds.add(eventId);
@@ -127,10 +127,12 @@ var generateCombinations = (outcomes, size) => {
         currentCombo.pop();
         usedEventIds.delete(eventId);
       } else {
-        const combiningIds = currentOutcome.marketTypeCombiningIds;
-        const canCombine = currentCombo.some((outcome) => {
+        const currentComboFromSameEvent = currentCombo.filter(
+          (outcome) => outcome.eventId === eventId
+        );
+        const canCombine = currentComboFromSameEvent.every((outcome) => {
           const existingMarketTypeId = outcome.marketTypeId;
-          return combiningIds.includes(existingMarketTypeId);
+          return marketTypeCombiningIds.includes(existingMarketTypeId);
         });
         if (canCombine) {
           currentCombo.push(currentOutcome);
