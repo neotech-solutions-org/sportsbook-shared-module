@@ -19,6 +19,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
+  calculateCashoutAmount: () => calculateCashoutAmount,
   calculateMaxPayout: () => calculateMaxPayout,
   calculateMaxStakeAmountForNormalBettingSlip: () => calculateMaxStakeAmountForNormalBettingSlip,
   calculateTotalOddsForNormalBettingSlip: () => calculateTotalOddsForNormalBettingSlip,
@@ -145,8 +146,15 @@ var generateCombinations = (outcomes, size) => {
   generate([], 0, /* @__PURE__ */ new Set());
   return result;
 };
+var calculateCashoutAmount = ({
+  stake,
+  initialOdds,
+  currOddWinProb,
+  uniqueMarketMargin
+}) => stake * initialOdds * currOddWinProb * (uniqueMarketMargin / 100);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  calculateCashoutAmount,
   calculateMaxPayout,
   calculateMaxStakeAmountForNormalBettingSlip,
   calculateTotalOddsForNormalBettingSlip,

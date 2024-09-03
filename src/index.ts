@@ -4,6 +4,7 @@ import {
   Bet,
   BetSlipMaxPayoutResult,
   BetSlipRequest,
+  CalculateCashoutAmountParams,
 } from './types';
 
 /**
@@ -211,3 +212,18 @@ const generateCombinations = (outcomes: Bet[], size: number): Bet[][] => {
   generate([], 0, new Set<string>());
   return result;
 };
+
+/**
+ *
+ * @param stake
+ * @param initialOdds
+ * @param currOddWinProb
+ * @param uniqueMarketMargin - Integer from 0 to 100 representing factor values from 0.00 to 1
+ */
+export const calculateCashoutAmount = ({
+  stake,
+  initialOdds,
+  currOddWinProb,
+  uniqueMarketMargin,
+}: CalculateCashoutAmountParams): number =>
+  stake * initialOdds * currOddWinProb * (uniqueMarketMargin / 100);

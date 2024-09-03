@@ -116,7 +116,14 @@ var generateCombinations = (outcomes, size) => {
   generate([], 0, /* @__PURE__ */ new Set());
   return result;
 };
+var calculateCashoutAmount = ({
+  stake,
+  initialOdds,
+  currOddWinProb,
+  uniqueMarketMargin
+}) => stake * initialOdds * currOddWinProb * (uniqueMarketMargin / 100);
 export {
+  calculateCashoutAmount,
   calculateMaxPayout,
   calculateMaxStakeAmountForNormalBettingSlip,
   calculateTotalOddsForNormalBettingSlip,

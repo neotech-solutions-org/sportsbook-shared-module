@@ -20,6 +20,12 @@ type BetSlipMaxPayoutResult = {
     totalStakeAmount: number;
     maxTotalStakeAmount: number;
 };
+type CalculateCashoutAmountParams = {
+    stake: number;
+    initialOdds: number;
+    currOddWinProb: number;
+    uniqueMarketMargin: number;
+};
 
 /**
  * Calculates total odds from the given bets.
@@ -55,5 +61,13 @@ declare const calculateMaxPayout: (betSlipRequest: BetSlipRequest, maxWinning: n
  * @returns betting type value
  */
 declare const getBettingType: (numberOfBets: number) => string;
+/**
+ *
+ * @param stake
+ * @param initialOdds
+ * @param currOddWinProb
+ * @param uniqueMarketMargin - Integer from 0 to 100 representing factor values from 0.00 to 1
+ */
+declare const calculateCashoutAmount: ({ stake, initialOdds, currOddWinProb, uniqueMarketMargin, }: CalculateCashoutAmountParams) => number;
 
-export { calculateMaxPayout, calculateMaxStakeAmountForNormalBettingSlip, calculateTotalOddsForNormalBettingSlip, getBettingType, getCombinations };
+export { calculateCashoutAmount, calculateMaxPayout, calculateMaxStakeAmountForNormalBettingSlip, calculateTotalOddsForNormalBettingSlip, getBettingType, getCombinations };

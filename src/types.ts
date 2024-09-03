@@ -25,3 +25,10 @@ export type BetSlipMaxPayoutResult = {
   totalStakeAmount: number;
   maxTotalStakeAmount: number;
 };
+
+export type CalculateCashoutAmountParams = {
+  stake: number;
+  initialOdds: number;
+  currOddWinProb: number;
+  uniqueMarketMargin: number;
+};
