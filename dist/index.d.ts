@@ -7,7 +7,7 @@ type Bet = {
     marketTypeId: string;
     marketTypeCombiningIds: string[];
     specialValues?: {
-        modelId: string;
+        modelId: string | null;
     }[];
 };
 type BetType = {
