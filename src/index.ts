@@ -154,10 +154,15 @@ const calculateSystemMaxPayout = (
   return maxPayout;
 };
 
+/**
+ * Create map where we will store market type id as key and modelIds from SV as value
+ * @param combo - Current combo
+ * @returns map
+ */
 const createMarketTypeSVModelIdsMap = (combo: Bet[]): Map<string, string[]> => {
   const marketTypeModelIdMap = new Map<string, string[]>();
 
-  combo.forEach((bet) => {
+  for (const bet of combo) {
     const { marketTypeId, specialValues } = bet;
 
     // Initialize map entry if it doesn't exist
@@ -172,11 +177,16 @@ const createMarketTypeSVModelIdsMap = (combo: Bet[]): Map<string, string[]> => {
         .filter(Boolean);
       marketTypeModelIdMap.get(marketTypeId)?.push(...modelIds);
     }
-  });
-
+  }
   return marketTypeModelIdMap;
 };
 
+/**
+ * Return boolean if one of the market type id keys has duplicated values of model ids.
+ * It means that we have same market type for same participant on one event.
+ * @param map - Map
+ * @returns
+ */
 const hasDuplicateModelIds = (map: Map<string, string[]>): boolean => {
   return [...map.values()].some((modelIds) => {
     const uniqueModelIds = new Set(modelIds);
@@ -230,10 +240,12 @@ const generateCombinations = (outcomes: Bet[], size: number): Bet[][] => {
           },
         );
 
-        const marketTypeSpecialValuesMap = createMarketTypeSVModelIdsMap(
-          currentComboFromSameEvent,
-        );
-        const canCombineMarketTypesWithSVModelIds = hasDuplicateModelIds(
+        // Add current outcome to current combo from same event to create map of [marketTypeId:string] : modelIds string[]
+        const marketTypeSpecialValuesMap = createMarketTypeSVModelIdsMap([
+          ...currentComboFromSameEvent,
+          currentOutcome,
+        ]);
+        const canCombineMarketTypesWithSVModelIds = !hasDuplicateModelIds(
           marketTypeSpecialValuesMap,
         );
 

@@ -1,6 +1,6 @@
 {
   "name": "sportsbook-shared-module",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Repository of the shared modules for the sportsbook project.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

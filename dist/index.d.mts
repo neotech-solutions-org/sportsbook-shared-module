@@ -6,7 +6,7 @@ type Bet = {
     banker?: boolean;
     marketTypeId: string;
     marketTypeCombiningIds: string[];
-    specialValues: {
+    specialValues?: {
         modelId: string;
     }[];
 };

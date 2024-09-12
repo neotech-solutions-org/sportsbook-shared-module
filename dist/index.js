@@ -113,7 +113,7 @@ var calculateSystemMaxPayout = (combinations, stakeAmountPerCombination, bankerO
 };
 var createMarketTypeSVModelIdsMap = (combo) => {
   const marketTypeModelIdMap = /* @__PURE__ */ new Map();
-  combo.forEach((bet) => {
+  for (const bet of combo) {
     const { marketTypeId, specialValues } = bet;
     if (!marketTypeModelIdMap.has(marketTypeId)) {
       marketTypeModelIdMap.set(marketTypeId, []);
@@ -122,7 +122,7 @@ var createMarketTypeSVModelIdsMap = (combo) => {
       const modelIds = specialValues.map((specialValue) => specialValue?.modelId).filter(Boolean);
       marketTypeModelIdMap.get(marketTypeId)?.push(...modelIds);
     }
-  });
+  }
   return marketTypeModelIdMap;
 };
 var hasDuplicateModelIds = (map) => {
@@ -157,10 +157,11 @@ var generateCombinations = (outcomes, size) => {
             return marketTypeCombiningIds.includes(existingMarketTypeId);
           }
         );
-        const marketTypeSpecialValuesMap = createMarketTypeSVModelIdsMap(
-          currentComboFromSameEvent
-        );
-        const canCombineMarketTypesWithSVModelIds = hasDuplicateModelIds(
+        const marketTypeSpecialValuesMap = createMarketTypeSVModelIdsMap([
+          ...currentComboFromSameEvent,
+          currentOutcome
+        ]);
+        const canCombineMarketTypesWithSVModelIds = !hasDuplicateModelIds(
           marketTypeSpecialValuesMap
         );
         if (canCombineMarketTypes && canCombineMarketTypesWithSVModelIds) {
