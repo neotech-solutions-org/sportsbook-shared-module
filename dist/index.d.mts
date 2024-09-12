@@ -6,6 +6,9 @@ type Bet = {
     banker?: boolean;
     marketTypeId: string;
     marketTypeCombiningIds: string[];
+    specialValues: {
+        modelId: string;
+    }[];
 };
 type BetType = {
     requiredHitCount: number;

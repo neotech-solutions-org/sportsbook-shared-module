@@ -7,7 +7,8 @@ export type Bet = {
   singlesStakeAmount?: number;
   banker?: boolean;
   marketTypeId: string;
-  marketTypeCombiningIds: string[]
+  marketTypeCombiningIds: string[];
+  specialValues: { modelId: string }[];
 };
 
 export type BetType = {

@@ -81,6 +81,26 @@ var calculateSystemMaxPayout = (combinations, stakeAmountPerCombination, bankerO
   }
   return maxPayout;
 };
+var createMarketTypeSVModelIdsMap = (combo) => {
+  const marketTypeModelIdMap = /* @__PURE__ */ new Map();
+  combo.forEach((bet) => {
+    const { marketTypeId, specialValues } = bet;
+    if (!marketTypeModelIdMap.has(marketTypeId)) {
+      marketTypeModelIdMap.set(marketTypeId, []);
+    }
+    if (specialValues?.length) {
+      const modelIds = specialValues.map((specialValue) => specialValue?.modelId).filter(Boolean);
+      marketTypeModelIdMap.get(marketTypeId)?.push(...modelIds);
+    }
+  });
+  return marketTypeModelIdMap;
+};
+var hasDuplicateModelIds = (map) => {
+  return [...map.values()].some((modelIds) => {
+    const uniqueModelIds = new Set(modelIds);
+    return uniqueModelIds.size !== modelIds.length;
+  });
+};
 var generateCombinations = (outcomes, size) => {
   const result = [];
   function generate(currentCombo, start, usedEventIds) {
@@ -101,11 +121,19 @@ var generateCombinations = (outcomes, size) => {
         const currentComboFromSameEvent = currentCombo.filter(
           (outcome) => outcome.eventId === eventId
         );
-        const canCombine = currentComboFromSameEvent.every((outcome) => {
-          const existingMarketTypeId = outcome.marketTypeId;
-          return marketTypeCombiningIds.includes(existingMarketTypeId);
-        });
-        if (canCombine) {
+        const canCombineMarketTypes = currentComboFromSameEvent.every(
+          (outcome) => {
+            const existingMarketTypeId = outcome.marketTypeId;
+            return marketTypeCombiningIds.includes(existingMarketTypeId);
+          }
+        );
+        const marketTypeSpecialValuesMap = createMarketTypeSVModelIdsMap(
+          currentComboFromSameEvent
+        );
+        const canCombineMarketTypesWithSVModelIds = hasDuplicateModelIds(
+          marketTypeSpecialValuesMap
+        );
+        if (canCombineMarketTypes && canCombineMarketTypesWithSVModelIds) {
           currentCombo.push(currentOutcome);
           generate(currentCombo, i + 1, usedEventIds);
           currentCombo.pop();

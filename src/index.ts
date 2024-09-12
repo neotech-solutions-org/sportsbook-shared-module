@@ -154,6 +154,36 @@ const calculateSystemMaxPayout = (
   return maxPayout;
 };
 
+const createMarketTypeSVModelIdsMap = (combo: Bet[]): Map<string, string[]> => {
+  const marketTypeModelIdMap = new Map<string, string[]>();
+
+  combo.forEach((bet) => {
+    const { marketTypeId, specialValues } = bet;
+
+    // Initialize map entry if it doesn't exist
+    if (!marketTypeModelIdMap.has(marketTypeId)) {
+      marketTypeModelIdMap.set(marketTypeId, []);
+    }
+
+    if (specialValues?.length) {
+      // Extract modelIds from specialValues and append to the corresponding marketTypeId
+      const modelIds = specialValues
+        .map((specialValue) => specialValue?.modelId)
+        .filter(Boolean);
+      marketTypeModelIdMap.get(marketTypeId)?.push(...modelIds);
+    }
+  });
+
+  return marketTypeModelIdMap;
+};
+
+const hasDuplicateModelIds = (map: Map<string, string[]>): boolean => {
+  return [...map.values()].some((modelIds) => {
+    const uniqueModelIds = new Set(modelIds);
+    return uniqueModelIds.size !== modelIds.length;
+  });
+};
+
 /**
  * Generate combinations of outcomes by the given size (required hit count).
  * Outcomes from the same event cannot be in the combinations for system ways bets.
@@ -193,12 +223,21 @@ const generateCombinations = (outcomes: Bet[], size: number): Bet[][] => {
         const currentComboFromSameEvent = currentCombo.filter(
           (outcome) => outcome.eventId === eventId,
         );
-        const canCombine = currentComboFromSameEvent.every((outcome) => {
-          const existingMarketTypeId = outcome.marketTypeId;
-          return marketTypeCombiningIds.includes(existingMarketTypeId);
-        });
+        const canCombineMarketTypes = currentComboFromSameEvent.every(
+          (outcome) => {
+            const existingMarketTypeId = outcome.marketTypeId;
+            return marketTypeCombiningIds.includes(existingMarketTypeId);
+          },
+        );
 
-        if (canCombine) {
+        const marketTypeSpecialValuesMap = createMarketTypeSVModelIdsMap(
+          currentComboFromSameEvent,
+        );
+        const canCombineMarketTypesWithSVModelIds = hasDuplicateModelIds(
+          marketTypeSpecialValuesMap,
+        );
+
+        if (canCombineMarketTypes && canCombineMarketTypesWithSVModelIds) {
           currentCombo.push(currentOutcome);
 
           generate(currentCombo, i + 1, usedEventIds);
