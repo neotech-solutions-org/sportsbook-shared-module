@@ -47,10 +47,21 @@ var calculateMaxStakeAmountForNormalBettingSlip = (totalOdds, maxWinning) => {
   }
   return roundedStakeAmount;
 };
-var getCombinations = (bets) => {
+var getCombinations = (bets, lastCombination = false) => {
   const betsWithoutBankers = bets.filter((bet) => !bet.banker);
   const combinations = {};
   const numberOfBankers = bets.length - betsWithoutBankers.length;
+  if (lastCombination) {
+    const lastSize = betsWithoutBankers.length;
+    const numberOfCombinations = generateCombinations(
+      betsWithoutBankers,
+      lastSize
+    ).length;
+    if (numberOfCombinations > 0) {
+      combinations[getBettingType(numberOfBankers + lastSize)] = numberOfCombinations;
+    }
+    return combinations;
+  }
   for (let i = 1; i <= betsWithoutBankers.length; i++) {
     const numberOfCombinations = generateCombinations(
       betsWithoutBankers,

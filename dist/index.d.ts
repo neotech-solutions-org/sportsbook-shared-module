@@ -46,9 +46,10 @@ declare const calculateMaxStakeAmountForNormalBettingSlip: (totalOdds: number, m
 /**
  * Generate combination type and number of combinations for system and system ways betting slips.
  * @param bets - Bets
+ * @param lastCombination - Flag for getting last combination size
  * @returns record with combination type and number of combinations
  */
-declare const getCombinations: (bets: Bet[]) => Record<string, number>;
+declare const getCombinations: (bets: Bet[], lastCombination?: boolean) => Record<string, number>;
 /**
  * Calculate total max payout, total stake amount and max total stake amount.
  * If the calculated max payout is higher then max possible payout, then max payout is set to max possible payout.

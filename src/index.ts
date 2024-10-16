@@ -43,12 +43,30 @@ export const calculateMaxStakeAmountForNormalBettingSlip = (
 /**
  * Generate combination type and number of combinations for system and system ways betting slips.
  * @param bets - Bets
+ * @param lastCombination - Flag for getting last combination size
  * @returns record with combination type and number of combinations
  */
-export const getCombinations = (bets: Bet[]): Record<string, number> => {
+export const getCombinations = (
+  bets: Bet[],
+  lastCombination: boolean = false,
+): Record<string, number> => {
   const betsWithoutBankers = bets.filter((bet) => !bet.banker);
   const combinations: Record<string, number> = {};
   const numberOfBankers = bets.length - betsWithoutBankers.length;
+
+  if (lastCombination) {
+    const lastSize = betsWithoutBankers.length;
+    const numberOfCombinations = generateCombinations(
+      betsWithoutBankers,
+      lastSize,
+    ).length;
+    if (numberOfCombinations > 0) {
+      combinations[getBettingType(numberOfBankers + lastSize)] =
+        numberOfCombinations;
+    }
+
+    return combinations;
+  }
 
   for (let i = 1; i <= betsWithoutBankers.length; i++) {
     const numberOfCombinations = generateCombinations(
