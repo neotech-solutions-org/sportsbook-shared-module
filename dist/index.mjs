@@ -22,13 +22,18 @@ var getCombinations = (bets, lastCombination = false) => {
   const combinations = {};
   const numberOfBankers = bets.length - betsWithoutBankers.length;
   if (lastCombination) {
-    const lastSize = betsWithoutBankers.length;
-    const numberOfCombinations = generateCombinations(
-      betsWithoutBankers,
-      lastSize
-    ).length;
-    if (numberOfCombinations > 0) {
-      combinations[getBettingType(numberOfBankers + lastSize)] = numberOfCombinations;
+    let numberOfCombinations;
+    let lastSize = betsWithoutBankers.length;
+    while ((!numberOfCombinations || numberOfCombinations === 0) && lastSize > 0) {
+      numberOfCombinations = generateCombinations(
+        betsWithoutBankers,
+        lastSize
+      ).length;
+      if (numberOfCombinations > 0) {
+        combinations[getBettingType(numberOfBankers + lastSize)] = numberOfCombinations;
+        break;
+      }
+      lastSize -= 1;
     }
     return combinations;
   }
