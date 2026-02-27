@@ -107,6 +107,7 @@ export const calculateMaxPayout = (
   let maxPayout = 0;
   let totalStakeAmount = 0;
   let maxTotalStakeAmount = 0;
+  let minWinningAmount = null;
   const { bets, betTypes } = betSlipRequest;
 
   for (const bet of bets) {
@@ -138,10 +139,17 @@ export const calculateMaxPayout = (
       maxPayout += payout < maxWinning ? payout : maxWinning;
       totalStakeAmount += stakeAmountPerCombination * combinations.length;
       maxTotalStakeAmount += maxStakeAmount;
+
+      if (betTypes?.length === 1) {
+        minWinningAmount = calculateMinWinningAmount(
+          combinations,
+          stakeAmountPerCombination,
+        );
+      }
     }
   }
 
-  return { maxPayout, totalStakeAmount, maxTotalStakeAmount };
+  return { maxPayout, totalStakeAmount, maxTotalStakeAmount, minWinningAmount };
 };
 
 /**
@@ -306,3 +314,17 @@ export const calculateCashoutAmount = ({
   uniqueMarketMargin,
 }: CalculateCashoutAmountParams): number =>
   stake * initialOdds * currOddWinProb * (uniqueMarketMargin / 100);
+
+const calculateMinWinningAmount = (
+  combinations: Bet[][],
+  stakeAmountPerCombination: number,
+): number | undefined => {
+  if (combinations?.length <= 1) return undefined;
+
+  const minOdds = combinations.reduce((min, combination) => {
+    const odds = combination.reduce((acc, bet) => acc * Number(bet.odds), 1);
+    return Math.min(min, odds);
+  }, Infinity);
+
+  return Math.round(stakeAmountPerCombination * minOdds * 100) / 100;
+};
