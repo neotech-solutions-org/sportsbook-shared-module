@@ -22,6 +22,7 @@ type BetSlipMaxPayoutResult = {
     maxPayout: number;
     totalStakeAmount: number;
     maxTotalStakeAmount: number;
+    minWinningAmount: number | null;
 };
 type CalculateCashoutAmountParams = {
     stake: number;

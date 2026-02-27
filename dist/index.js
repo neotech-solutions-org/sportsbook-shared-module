@@ -82,6 +82,7 @@ var calculateMaxPayout = (betSlipRequest, maxWinning, maxStakeAmount) => {
   let maxPayout = 0;
   let totalStakeAmount = 0;
   let maxTotalStakeAmount = 0;
+  let minWinningAmount = null;
   const { bets, betTypes } = betSlipRequest;
   for (const bet of bets) {
     if (!bet.singlesStakeAmount)
@@ -108,9 +109,15 @@ var calculateMaxPayout = (betSlipRequest, maxWinning, maxStakeAmount) => {
       maxPayout += payout < maxWinning ? payout : maxWinning;
       totalStakeAmount += stakeAmountPerCombination * combinations.length;
       maxTotalStakeAmount += maxStakeAmount;
+      if (betTypes?.length === 1) {
+        minWinningAmount = calculateMinWinningAmount(
+          combinations,
+          stakeAmountPerCombination
+        );
+      }
     }
   }
-  return { maxPayout, totalStakeAmount, maxTotalStakeAmount };
+  return { maxPayout, totalStakeAmount, maxTotalStakeAmount, minWinningAmount };
 };
 var getBettingType = (numberOfBets) => {
   return BETTING_TYPES[numberOfBets - 1] ?? `${numberOfBets} Fold`;
@@ -197,6 +204,15 @@ var calculateCashoutAmount = ({
   currOddWinProb,
   uniqueMarketMargin
 }) => stake * initialOdds * currOddWinProb * (uniqueMarketMargin / 100);
+var calculateMinWinningAmount = (combinations, stakeAmountPerCombination) => {
+  if (combinations?.length <= 1)
+    return void 0;
+  const minOdds = combinations.reduce((min, combination) => {
+    const odds = combination.reduce((acc, bet) => acc * Number(bet.odds), 1);
+    return Math.min(min, odds);
+  }, Infinity);
+  return Math.round(stakeAmountPerCombination * minOdds * 100) / 100;
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   calculateCashoutAmount,
