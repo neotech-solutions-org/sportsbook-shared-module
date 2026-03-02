@@ -74,5 +74,9 @@ declare const getBettingType: (numberOfBets: number) => string;
  * @param uniqueMarketMargin - Integer from 0 to 100 representing factor values from 0.00 to 1
  */
 declare const calculateCashoutAmount: ({ stake, initialOdds, currOddWinProb, uniqueMarketMargin, }: CalculateCashoutAmountParams) => number;
+declare const calculateOddsRange: (bets: Bet[], requiredHitCount: number) => {
+    minOdds: number | null;
+    maxOdds: number | null;
+};
 
-export { calculateCashoutAmount, calculateMaxPayout, calculateMaxStakeAmountForNormalBettingSlip, calculateTotalOddsForNormalBettingSlip, getBettingType, getCombinations };
+export { calculateCashoutAmount, calculateMaxPayout, calculateMaxStakeAmountForNormalBettingSlip, calculateOddsRange, calculateTotalOddsForNormalBettingSlip, getBettingType, getCombinations };

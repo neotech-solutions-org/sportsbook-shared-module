@@ -149,7 +149,12 @@ export const calculateMaxPayout = (
     }
   }
 
-  return { maxPayout, totalStakeAmount, maxTotalStakeAmount, minWinningAmount };
+  return {
+    maxPayout,
+    totalStakeAmount,
+    maxTotalStakeAmount,
+    minWinningAmount,
+  };
 };
 
 /**
@@ -314,6 +319,40 @@ export const calculateCashoutAmount = ({
   uniqueMarketMargin,
 }: CalculateCashoutAmountParams): number =>
   stake * initialOdds * currOddWinProb * (uniqueMarketMargin / 100);
+
+export const calculateOddsRange = (
+  bets: Bet[],
+  requiredHitCount: number,
+): { minOdds: number | null; maxOdds: number | null } => {
+  const bankerOutcomes = bets.filter((bet) => bet.banker);
+  const combinationOutcomes = bets.filter((bet) => !bet.banker);
+  const combinations = generateCombinations(
+    combinationOutcomes,
+    requiredHitCount,
+  );
+
+  if (combinations.length <= 1) return { minOdds: null, maxOdds: null };
+
+  const bankerOdds = bankerOutcomes.reduce(
+    (acc, bet) => acc * Number(bet.odds),
+    1,
+  );
+
+  let min = Infinity;
+  let max = -Infinity;
+
+  for (const combination of combinations) {
+    const combinationOdds =
+      combination.reduce((acc, bet) => acc * Number(bet.odds), 1) * bankerOdds;
+    if (combinationOdds < min) min = combinationOdds;
+    if (combinationOdds > max) max = combinationOdds;
+  }
+
+  return {
+    minOdds: Number.isFinite(min) ? Math.round(min * 100) / 100 : null,
+    maxOdds: Number.isFinite(max) ? Math.round(max * 100) / 100 : null,
+  };
+};
 
 const calculateMinWinningAmount = (
   combinations: Bet[][],
