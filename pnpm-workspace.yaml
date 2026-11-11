@@ -2,5 +2,5 @@ minimumReleaseAge: 1440 # 1 day
 
 # Lifecycle scripts already executed by the previous npm installation.
 allowBuilds:
-  "esbuild": true
-  "fsevents": true
+  'esbuild': true
+  'fsevents': true
