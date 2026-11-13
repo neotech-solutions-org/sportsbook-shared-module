@@ -28,30 +28,24 @@ artifact, or revert the manifest, workspace settings, lockfile, and CI changes t
 
 ## GitHub dependency scanning
 
-The `Dependency submission` workflow scans both documents of `pnpm-lock.yaml` with
-Microsoft Component Detection 9.1.0 and submits the graph to GitHub's dependency
-submission API. This includes application dependencies that single-document readers
-can miss. Keep both lockfile documents and package-manager enforcement intact.
+Set `pmOnFail: ignore` in `pnpm-workspace.yaml` so pnpm does not record its own
+package-manager resolution in an extra lockfile document. The committed lockfile
+contains only the application dependency graph for GitHub's native scanner.
 
-The scanner binary is pinned by version and SHA256; checkout and GitHub Script actions
-are pinned by commit. Only the static Pnpm detector runs. Application dependencies,
-private Git packages and lifecycle scripts are not installed or executed. The submission
-step percent-encodes package URL components, including private Git dependency versions,
-and preserves direct/transitive relationships and runtime/development scopes. Scanner
-errors, incomplete identities, empty results and manager-only graphs fail the workflow
-instead of uploading an empty or partial snapshot.
+Use Corepack to select the exact `packageManager` pin in `package.json`. This setting
+disables pnpm's own version check and automatic version switching; invoking an unrelated
+global pnpm binary bypasses that selection. Frozen installs, existing peer checks,
+release cooldowns, overrides and lifecycle restrictions continue to apply.
 
-Runs start when dependency inputs or this workflow change on any branch, or manually.
-A stable `pnpm-lockfile` correlator replaces earlier submissions from this workflow.
-The submission job alone receives `contents: write` for the repository token; checkout
-does not persist credentials. Dependency graph must be enabled and organization policy
-must permit the pinned actions and write permission. Resolve permission or API failures
-rather than suppressing them.
+When updating dependencies, enable Corepack, use the pinned pnpm and commit the
+regenerated single-document lockfile. Config dependencies may require an environment
+document in future, so reassess scanner compatibility before introducing them.
 
-After merging, confirm a successful default-branch run and check Insights > Dependency
-graph for application packages, not just pnpm. Branch submissions do not restore
-default-branch alerts before merge. Existing audit commands and Dependabot update
-configuration remain separate from this graph submission.
+GitHub Dependency graph must still be enabled in Settings > Advanced Security.
+After merging to the default branch, confirm application packages appear in Insights >
+Dependency graph. An administrator must enable disabled graphs; changing this lockfile
+does not change repository settings. Existing audit commands and Dependabot version
+updates remain separate. No custom dependency-submission workflow is required.
 
-References: [multi-document scanner support](https://github.com/microsoft/component-detection/releases/tag/v8.0.5)
-and [GitHub dependency submission API](https://docs.github.com/en/rest/dependency-graph/dependency-submission).
+References: [pnpm configuration](https://pnpm.io/settings/cli#pmonfail) and the
+[upstream workaround](https://github.com/pnpm/pnpm/issues/13805).

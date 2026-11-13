@@ -4,3 +4,6 @@ minimumReleaseAge: 1440 # 1 day
 allowBuilds:
   'esbuild': true
   'fsevents': true
+
+# Corepack selects the packageManager pin; retain native scanner compatibility.
+pmOnFail: ignore
